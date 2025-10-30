@@ -361,6 +361,9 @@ services:
       SINGLE_USER_CREDENTIALS_PASSWORD: rootrootrootroot
     volumes:
       - nifi_data:/opt/nifi/nifi-current
+      - ./nifi_scripts:/opt/nifi/scripts
+      - ./nifi_templates:/opt/nifi/templates
+    command: ["/bin/bash", "-c", "/opt/nifi/scripts/import_template.sh & exec /opt/nifi/nifi-current/bin/nifi.sh run"]
     networks:
       - iot-network
 

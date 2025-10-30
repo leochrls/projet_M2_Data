@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<template encoding-version="1.4">
+    <description>Template OpenAIP - Ingestion des données aéronautiques vers Kafka</description>
+    <groupId>root</groupId>
+    <name>OpenAIP-Flow</name>
+    <snippet>
+        <processors>
+            <!-- Processor InvokeHTTP pour Airports -->
+            <processor>
+                <id>invoke-http-airports</id>
+                <name>InvokeHTTP-Airports</name>
+                <type>org.apache.nifi.processors.standard.InvokeHTTP</type>
+                <properties>
+                    <entry>
+                        <key>HTTP Method</key>
+                        <value>GET</value>
+                    </entry>
+                    <entry>
+                        <key>Remote URL</key>
+                        <value>https://api.core.openaip.net/api/airports?apiKey=YOUR_API_KEY</value>
+                    </entry>
+                    <entry>
+                        <key>Connection Timeout</key>
+                        <value>30 sec</value>
+                    </entry>
+                </properties>
+                <schedulingPeriod>0 */6 * * * ?</schedulingPeriod>
+                <schedulingStrategy>CRON_DRIVEN</schedulingStrategy>
+            </processor>
+            
+            <!-- Processor PublishKafka pour Airports -->
+            <processor>
+                <id>publish-kafka-airports</id>
+                <name>PublishKafka-Airports</name>
+                <type>org.apache.nifi.processors.kafka.pubsub.PublishKafka_2_6</type>
+                <properties>
+                    <entry>
+                        <key>bootstrap.servers</key>
+                        <value>kafka:9093</value>
+                    </entry>
+                    <entry>
+                        <key>topic</key>
+                        <value>openAIP_airports</value>
+                    </entry>
+                    <entry>
+                        <key>key.serializer</key>
+                        <value>org.apache.kafka.common.serialization.StringSerializer</value>
+                    </entry>
+                    <entry>
+                        <key>value.serializer</key>
+                        <value>org.apache.kafka.common.serialization.StringSerializer</value>
+                    </entry>
+                </properties>
+            </processor>
+            
+            <!-- Processor InvokeHTTP pour Airspaces -->
+            <processor>
+                <id>invoke-http-airspaces</id>
+                <name>InvokeHTTP-Airspaces</name>
+                <type>org.apache.nifi.processors.standard.InvokeHTTP</type>
+                <properties>
+                    <entry>
+                        <key>HTTP Method</key>
+                        <value>GET</value>
+                    </entry>
+                    <entry>
+                        <key>Remote URL</key>
+                        <value>https://api.core.openaip.net/api/airspaces?apiKey=YOUR_API_KEY</value>
+                    </entry>
+                </properties>
+                <schedulingPeriod>0 */6 * * * ?</schedulingPeriod>
+                <schedulingStrategy>CRON_DRIVEN</schedulingStrategy>
+            </processor>
+            
+            <!-- Processor PublishKafka pour Airspaces -->
+            <processor>
+                <id>publish-kafka-airspaces</id>
+                <name>PublishKafka-Airspaces</name>
+                <type>org.apache.nifi.processors.kafka.pubsub.PublishKafka_2_6</type>
+                <properties>
+                    <entry>
+                        <key>bootstrap.servers</key>
+                        <value>kafka:9093</value>
+                    </entry>
+                    <entry>
+                        <key>topic</key>
+                        <value>openAIP_airspaces</value>
+                    </entry>
+                </properties>
+            </processor>
+            
+            <!-- Processor InvokeHTTP pour Obstacles -->
+            <processor>
+                <id>invoke-http-obstacles</id>
+                <name>InvokeHTTP-Obstacles</name>
+                <type>org.apache.nifi.processors.standard.InvokeHTTP</type>
+                <properties>
+                    <entry>
+                        <key>HTTP Method</key>
+                        <value>GET</value>
+                    </entry>
+                    <entry>
+                        <key>Remote URL</key>
+                        <value>https://api.core.openaip.net/api/obstacles?apiKey=YOUR_API_KEY</value>
+                    </entry>
+                </properties>
+                <schedulingPeriod>0 */6 * * * ?</schedulingPeriod>
+                <schedulingStrategy>CRON_DRIVEN</schedulingStrategy>
+            </processor>
+            
+            <!-- Processor PublishKafka pour Obstacles -->
+            <processor>
+                <id>publish-kafka-obstacles</id>
+                <name>PublishKafka-Obstacles</name>
+                <type>org.apache.nifi.processors.kafka.pubsub.PublishKafka_2_6</type>
+                <properties>
+                    <entry>
+                        <key>bootstrap.servers</key>
+                        <value>kafka:9093</value>
+                    </entry>
+                    <entry>
+                        <key>topic</key>
+                        <value>openAIP_obstacles</value>
+                    </entry>
+                </properties>
+            </processor>
+        </processors>
+        
+        <!-- Connections entre processors -->
+        <connections>
+            <connection>
+                <id>connection-airports</id>
+                <name>airports-connection</name>
+                <source>
+                    <id>invoke-http-airports</id>
+                    <groupId>root</groupId>
+                    <type>PROCESSOR</type>
+                </source>
+                <destination>
+                    <id>publish-kafka-airports</id>
+                    <groupId>root</groupId>
+                    <type>PROCESSOR</type>
+                </destination>
+                <selectedRelationships>Response</selectedRelationships>
+            </connection>
+            
+            <connection>
+                <id>connection-airspaces</id>
+                <name>airspaces-connection</name>
+                <source>
+                    <id>invoke-http-airspaces</id>
+                    <groupId>root</groupId>
+                    <type>PROCESSOR</type>
+                </source>
+                <destination>
+                    <id>publish-kafka-airspaces</id>
+                    <groupId>root</groupId>
+                    <type>PROCESSOR</type>
+                </destination>
+                <selectedRelationships>Response</selectedRelationships>
+            </connection>
+            
+            <connection>
+                <id>connection-obstacles</id>
+                <name>obstacles-connection</name>
+                <source>
+                    <id>invoke-http-obstacles</id>
+                    <groupId>root</groupId>
+                    <type>PROCESSOR</type>
+                </source>
+                <destination>
+                    <id>publish-kafka-obstacles</id>
+                    <groupId>root</groupId>
+                    <type>PROCESSOR</type>
+                </destination>
+                <selectedRelationships>Response</selectedRelationships>
+            </connection>
+        </connections>
+    </snippet>
+</template>
