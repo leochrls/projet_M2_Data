@@ -120,7 +120,10 @@ curl http://localhost:5000/api/airports_processed
 - `GET /api/airport_airspaces`
 - `GET /api/airport_obstacles`
 
-### Étape 5 : Installer le plugin Grafana
+### Étape 5 : Visualisation sur Grafana
+## Méthode 1:utilisation de JsonApi
+
+## Methode 2:Installer le plugin Grafana
 
 ```powershell
 # Installer le plugin Infinity
