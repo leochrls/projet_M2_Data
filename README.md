@@ -121,9 +121,9 @@ curl http://localhost:5000/api/airports_processed
 - `GET /api/airport_obstacles`
 
 ### Étape 5 : Visualisation sur Grafana
-## Méthode 1:utilisation de JsonApi
+Méthode 1:utilisation de JsonApi
 
-## Methode 2:Installer le plugin Grafana
+Methode 2:Installer le plugin Grafana
 
 ```powershell
 # Installer le plugin Infinity
@@ -145,8 +145,9 @@ Attendre 15 secondes pour que Grafana redémarre.
 #### B. Ajouter la Data Source
 
 1. **Menu** → **⚙️ Configuration** → **Data Sources**
-2. **Add data source** → Chercher **"Infinity"**
-3. Configuration :
+2. **Add data source** → Chercher **"Infinity"** (si plugging installé) sinon → Chercher **JsonAPI**
+
+3. Configuration (pour Infinity) :
    ```
    Name: OpenAIP API
    ```
